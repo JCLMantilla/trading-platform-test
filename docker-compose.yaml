@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  trading-api:
+    image: ghcr.io/jclmantilla/llm-cache:latest
+    ports:
+      - ${APP_PORT}:8005
+    expose:
+      - "8005"
+    env_file:
+      - .env
+    container_name: trading-api-container
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379" # DELETE FOR PROD
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - trading-api
+
+networks:
+  default:
+    name: my_network
+    external: false
