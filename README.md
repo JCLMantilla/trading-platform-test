@@ -1,15 +1,15 @@
 # trading-platform-test
 Trading platform by Juan Lopez
 
+Is it possible to use GenAI to perform trading decisions, knowing that LLM pipelines are not nowhere near under 0.5s inference times?
 
-This case study will be strutured in the following way:
+
+Index
 
 
 1. Prototype
 
 2. Systems Design
-
-3. Databricks pipeline
 
 
 The experimentation and the results of prototype are the ones that motivated the proposed system design
